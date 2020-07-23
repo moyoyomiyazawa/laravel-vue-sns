@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Article extends Model
 {
+    // Articleモデルにおいて、いじっていもいいプロパティは下記のみだよ、という意味
+    protected $fillable = [
+        'title',
+        'body',
+    ];
+
     /**
      * Articleモデルから、紐づくユーザーモデルのプロパティにアクセスできるように、リレーションを定義する
      *
