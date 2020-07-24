@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
+    public function __construct()
+    {
+        // ArticlePolicyの適用
+        $this->authorizeResource(Article::class, 'article');
+    }
+
     public function index()
     {
         // allメソッドはコレクションを返す
@@ -38,5 +44,35 @@ class ArticleController extends Controller
         $article->user_id = $request->user()->id;
         $article->save();
         return redirect()->route('articles.index');
+    }
+
+    // 記事更新画面
+    // 引数にArticleクラスの型宣言をすることで、ArticleモデルのインスタンスのDIを行っている
+    // DIが行われることで、editアクションメソッド内の$articleにはArticleモデルのインスタンスが代入された状態となる
+    // さらに、$articleには、このeditアクションメソッドが呼び出された時のURIが例えばarticles/3/editであれば、idが3であるArticleモデルのインスタンスが代入されます
+    // @see 暗黙の結合 https://readouble.com/laravel/6.x/ja/routing.html#implicit-binding
+    public function edit(Article $article)
+    {
+        return view('articles.edit', ['article' => $article]);
+    }
+
+    // 記事更新処理
+    public function update(ArticleRequest $request, Article $article)
+    {
+        $article->fill($request->all())->save();
+        return redirect()->route('articles.index');
+    }
+
+    // 記事削除処理
+    public function destroy(Article $article)
+    {
+        $article->delete();
+        return redirect()->route('articles.index');
+    }
+
+    // 記事詳細画面
+    public function show(Article $article)
+    {
+        return view('articles.show', ['article' => $article]);
     }
 }
