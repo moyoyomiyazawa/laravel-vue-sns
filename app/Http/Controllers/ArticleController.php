@@ -75,4 +75,29 @@ class ArticleController extends Controller
     {
         return view('articles.show', ['article' => $article]);
     }
+
+    // いいねする
+    public function like(Request $request, Article $article)
+    {
+        // 複数回いいねができないようにdetachしてからattachする
+        $article->likes()->detach($request->user()->id);
+        $article->likes()->attach($request->user()->id);
+
+        // Laravelでは、コントローラーのアクションメソッドで配列や連想配列を返すと、JSON形式に変換されてレスポンスされる
+        return [
+            'id' => $article->id,
+            'countLikes' => $article->count_likes,
+        ];
+    }
+
+    // いいねを解除する
+    public function unlike(Request $request, Article $article)
+    {
+        $article->likes()->detach($request->user()->id);
+
+        return [
+            'id' => $article->id,
+            'countLikes' => $article->count_likes,
+        ];
+    }
 }
