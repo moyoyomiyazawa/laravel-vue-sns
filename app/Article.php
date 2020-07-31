@@ -62,4 +62,15 @@ class Article extends Model
     {
         return $this->likes->count();
     }
+
+    /**
+     * 記事モデルとタグモデルの多対多のリレーションを定義する
+     *
+     * @return BelongsToMany
+     */
+    public function tags(): BelongsToMany
+    {
+        // 中間テーブルの名前がarticle_tagといった2つのモデル名の単数形をアルファベット順に結合した名前なので、第二引数は省略可能となっている
+        return $this->belongsToMany('App\Tag')->withTimestamps();
+    }
 }
