@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Article;
+use App\Tag;
 use App\Http\Requests\ArticleRequest;
 use Illuminate\Http\Request;
 
@@ -43,6 +44,16 @@ class ArticleController extends Controller
         $article->fill($request->all());
         $article->user_id = $request->user()->id;
         $article->save();
+
+        // $request->tagsはArticleRequestのpassedValidationメソッドでコレクションになっている
+        // eachはコレクションのメソッド
+        $request->tags->each(function ($tagName) use ($article) {
+            // firstOrCreateメソッドは、引数として渡した「カラム名と値のペア」を持つレコードがテーブルに存在するかどうかを探し、もし存在すればそのモデルを返します。
+            // テーブルに存在しなければ、そのレコードをテーブルに保存した上で、モデルを返します。
+            $tag = Tag::firstOrCreate(['name' => $tagName]);
+            // 記事とタグの紐付け（article_tagテーブルへのレコードの保存）
+            $article->tags()->attach($tag);
+        });
         return redirect()->route('articles.index');
     }
 
