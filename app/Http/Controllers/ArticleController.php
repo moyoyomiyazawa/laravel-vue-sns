@@ -64,13 +64,28 @@ class ArticleController extends Controller
     // @see 暗黙の結合 https://readouble.com/laravel/6.x/ja/routing.html#implicit-binding
     public function edit(Article $article)
     {
-        return view('articles.edit', ['article' => $article]);
+        $tagNames = $article->tags->map(function ($tag) {
+            return ['text' => $tag->name];
+        });
+        return view('articles.edit', [
+            'article' => $article,
+            'tagNames' => $tagNames,
+        ]);
     }
 
     // 記事更新処理
     public function update(ArticleRequest $request, Article $article)
     {
         $article->fill($request->all())->save();
+
+        // 一旦記事とタグの既存の紐付けを全削除する
+        $article->tags()->detach();
+        // タグを登録し直す
+        $request->tags->each(function ($tagName) use ($article) {
+            $tag = Tag::firstOrCreate(['name' => $tagName]);
+            $article->tags()->attach($tag);
+        });
+
         return redirect()->route('articles.index');
     }
 
