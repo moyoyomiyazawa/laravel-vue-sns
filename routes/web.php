@@ -10,3 +10,6 @@ Route::prefix('articles')->name('articles.')->group(function () {
     Route::put('/{article}/like', 'ArticleController@like')->name('like')->middleware('auth');
     Route::delete('/{article}/like', 'ArticleController@unlike')->name('unlike')->middleware('auth');
 });
+
+// タグ別記事一覧画面
+Route::get('/tags/{name}', 'TagController@show')->name('tags.show');
