@@ -13,3 +13,8 @@ Route::prefix('articles')->name('articles.')->group(function () {
 
 // タグ別記事一覧画面
 Route::get('/tags/{name}', 'TagController@show')->name('tags.show');
+
+// ユーザーページ
+Route::prefix('users')->name('users.')->group(function () {
+    Route::get('/{name}', 'UserController@show')->name('show');
+});
