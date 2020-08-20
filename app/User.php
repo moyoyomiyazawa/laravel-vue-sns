@@ -45,6 +45,7 @@ class User extends Authenticatable
         $this->notify(new PasswordResetNotification($token, new BareMail()));
     }
 
+    // あるユーザーをフォローしているのユーザーの一覧を取得
     public function followers(): BelongsToMany
     {
         // リレーション元: usersテーブル
@@ -53,6 +54,12 @@ class User extends Authenticatable
         // リレーション元のusersテーブルのidは中間テーブルfollowsテーブルのfollowee_idと紐付く
         // リレーション先のusersテーブルのidは中間テーブルfollowsテーブルのfollower_idと紐付く
         return $this->belongsToMany('App\User', 'follows', 'followee_id', 'follower_id')->withTimestamps();
+    }
+
+    // ログインユーザーがフォローしているユーザーの一覧を取得
+    public function followings(): BelongsToMany
+    {
+        return $this->belongsToMany('App\User', 'follows', 'follower_id', 'followee_id')->withTimestamps();
     }
 
     public function isFollowedBy(?User $user): bool
