@@ -56,16 +56,37 @@ class User extends Authenticatable
         return $this->belongsToMany('App\User', 'follows', 'followee_id', 'follower_id')->withTimestamps();
     }
 
-    // ログインユーザーがフォローしているユーザーの一覧を取得
+    // あるユーザーがフォローしているユーザーの一覧を取得
     public function followings(): BelongsToMany
     {
         return $this->belongsToMany('App\User', 'follows', 'follower_id', 'followee_id')->withTimestamps();
     }
 
+    // ログインユーザーが現在表示中のユーザーをフォローしているかどうかを判定する
     public function isFollowedBy(?User $user): bool
     {
         return $user
             ? (bool)$this->followers->where('id', $user->id)->count()
             : false;
+    }
+
+    /**
+     * フォロワー数を取得
+     *
+     * @return integer
+     */
+    public function getCountFollowersAttribute(): int
+    {
+        return $this->followers->count();
+    }
+
+    /**
+     * フォロワー中のユーザー数を取得
+     *
+     * @return integer
+     */
+    public function getCountFollowingsAttribute(): int
+    {
+        return $this->followings->count();
     }
 }
