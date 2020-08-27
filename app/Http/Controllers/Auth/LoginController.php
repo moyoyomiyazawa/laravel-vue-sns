@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
@@ -48,5 +50,23 @@ class LoginController extends Controller
     public function redirectToProvider(string $provider)
     {
         return Socialite::driver($provider)->redirect();
+    }
+
+    public function handleProviderCallback(Request $request, string $provider)
+    {
+        $providerUser = Socialite::driver($provider)->stateless()->user();
+        // サービスからユーザー情報を取得
+        // $providerUser = Socialite::driver($provider)->user();
+
+        // usersテーブルにサービスのメールアドレスが存在するか調べる
+        // コレクションのメソッドfirst()は存在しない場合nullを返す
+        $user = User::where('email', $providerUser->getEmail())->first();
+
+        if ($user) {
+            // ログイン状態にする（第2引数をtrueにすることでログイン状態を維持できる）
+            $this->guard()->login($user, true);
+            // ログイン後の画面（記事一覧）へ遷移させる
+            return $this->sendLoginResponse($request);
+        }
     }
 }
