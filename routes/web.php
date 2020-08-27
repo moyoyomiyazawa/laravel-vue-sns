@@ -1,6 +1,11 @@
 <?php
 
 Auth::routes();
+
+// OAuth認証
+Route::prefix('login')->name('login.')->group(function () {
+    Route::get('/{provider}', 'Auth\LoginController@redirectToProvider')->name('{provider}');
+});
 Route::get('/', 'ArticleController@index')->name('articles.index');
 Route::resource('/articles', 'ArticleController')->except(['index', 'show'])->middleware('auth');
 // 記事詳細画面はログインユーザーじゃなくても見れるようにしたいので、部分的にauthミドルウェアがついていないルートを定義する
