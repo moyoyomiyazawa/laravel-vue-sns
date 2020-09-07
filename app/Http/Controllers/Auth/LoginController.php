@@ -54,19 +54,26 @@ class LoginController extends Controller
 
     public function handleProviderCallback(Request $request, string $provider)
     {
-        $providerUser = Socialite::driver($provider)->stateless()->user();
         // サービスからユーザー情報を取得
-        // $providerUser = Socialite::driver($provider)->user();
+        $providerUser = Socialite::driver($provider)->stateless()->user();
 
         // usersテーブルにサービスのメールアドレスが存在するか調べる
         // コレクションのメソッドfirst()は存在しない場合nullを返す
         $user = User::where('email', $providerUser->getEmail())->first();
 
+        // 既に登録済のユーザの場合
         if ($user) {
             // ログイン状態にする（第2引数をtrueにすることでログイン状態を維持できる）
             $this->guard()->login($user, true);
             // ログイン後の画面（記事一覧）へ遷移させる
             return $this->sendLoginResponse($request);
         }
+
+        // 未登録ユーザの場合（usersテーブルにサービスのメールアドレスが存在しない場合）
+        return redirect()->route('register.{provider}', [
+            'provider' => $provider,
+            'email' => $providerUser->getEmail(),
+            'token' => $providerUser->token,
+        ]);
     }
 }

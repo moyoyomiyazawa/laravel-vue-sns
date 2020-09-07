@@ -7,6 +7,12 @@ Route::prefix('login')->name('login.')->group(function () {
     Route::get('/{provider}', 'Auth\LoginController@redirectToProvider')->name('{provider}');
     Route::get('{provider}/callback', 'Auth\LoginController@handleProviderCallback')->name('{provider}.callback');
 });
+
+// OAuth認証の場合で、未登録ユーザーの場合にユーザ名設定を行ってもらう
+Route::prefix('register')->name('register.')->group(function() {
+    Route::get('/{provider}', 'Auth\RegisterController@showProviderUserRegistrationForm')->name('{provider}');
+});
+
 Route::get('/', 'ArticleController@index')->name('articles.index');
 Route::resource('/articles', 'ArticleController')->except(['index', 'show'])->middleware('auth');
 // 記事詳細画面はログインユーザーじゃなくても見れるようにしたいので、部分的にauthミドルウェアがついていないルートを定義する
