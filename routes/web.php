@@ -11,6 +11,7 @@ Route::prefix('login')->name('login.')->group(function () {
 // OAuth認証の場合で、未登録ユーザーの場合にユーザ名設定を行ってもらう
 Route::prefix('register')->name('register.')->group(function() {
     Route::get('/{provider}', 'Auth\RegisterController@showProviderUserRegistrationForm')->name('{provider}');
+    Route::post('/{provider}', 'Auth\RegisterController@registerProviderUser')->name('{provider}');
 });
 
 Route::get('/', 'ArticleController@index')->name('articles.index');
