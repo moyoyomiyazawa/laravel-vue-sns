@@ -10,7 +10,13 @@ class UserController extends Controller
     // ユーザーページ（ユーザーが投稿した記事一覧画面）
     public function show(string $name)
     {
-        $user = User::where('name', $name)->first();
+        $user = User::where('name', $name)->first()
+            // ユーザーモデルのリレーション先の記事の、さらにリレーション先のデータを取得
+            ->load([
+                'articles.user',
+                'articles.likes',
+                'articles.tags',
+            ]);
 
         $articles = $user->articles->sortByDesc('created_at');
 
