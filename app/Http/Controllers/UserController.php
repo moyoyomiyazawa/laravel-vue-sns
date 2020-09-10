@@ -29,7 +29,13 @@ class UserController extends Controller
     // いいねした記事一覧画面
     public function likes(string $name)
     {
-        $user = User::where('name', $name)->first();
+        $user = User::where('name', $name)->first()
+            // あるユーザーがいいねした記事に紐付く各データを読み込む
+            ->load([
+                'likes.user',
+                'likes.likes',
+                'likes.tags',
+            ]);
 
         $articles = $user->likes->sortByDesc('created_at');
 
