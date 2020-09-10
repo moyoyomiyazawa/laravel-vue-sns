@@ -20,7 +20,7 @@ class ArticleController extends Controller
         // allメソッドはコレクションを返す
         // sortByDescはコレクションのメソッド
         // 参考: https://readouble.com/laravel/6.x/ja/collections.html
-        $articles = Article::all()->sortByDesc('created_at');
+        $articles = Article::all()->sortByDesc('created_at')->load(['user', 'likes', 'tags']);
 
         return view('articles.index', ['articles' => $articles]);
     }
