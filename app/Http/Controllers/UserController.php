@@ -62,7 +62,10 @@ class UserController extends Controller
     // フォロワーの一覧画面
     public function followers(string $name)
     {
-        $user = User::where('name', $name)->first();
+        $user = User::where('name', $name)->first()
+            // isFollowedByメソッドが、フォロワーのフォロワー情報を取得するSQLを、フォロワーを表示する毎に発行してしまう（N+1問題）
+            // EagerLoadでフォロワーのフォロワー情報を事前に読み込んでおくことでN+1問題を回避する
+            ->load('followers.followers');
 
         $followers = $user->followers->sortByDesc('created_at');
 
